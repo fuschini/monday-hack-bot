@@ -16,6 +16,15 @@ class App extends React.Component {
     };
   }
 
+  handleClick() {    
+    monday.api(`mutation {
+        create_item(board_id: 704514125, group_id: "topics", item_name: "teste rola") {
+          id
+        }
+      }`
+    )
+  }
+
   startRecording = () => {
     this.setState({ record: true });
   }
@@ -40,12 +49,6 @@ class App extends React.Component {
     monday.listen("context", res => {
       this.setState({context: res.data});
       console.log(res.data);
-      monday.api(`query ($boardIds: [Int]) { boards (ids:$boardIds) { name items(limit:1) { name column_values { title text } } } }`,
-        { variables: {boardIds: this.state.context.boardIds} }
-      )
-      .then(res => {
-        this.setState({boardData: res.data});
-      });
     })
   }
 
@@ -70,6 +73,10 @@ class App extends React.Component {
         </div>
 
         {JSON.stringify(this.state.boardData, null, 2)}
+
+        <button onClick={this.handleClick}>        
+          {"Criar"}
+        </button>
       </div>
     );
   }
