@@ -6,15 +6,17 @@
     "start": "npm run stop && concurrently \"npm run server\" \"npm run expose\"",
     "build": "react-scripts build",
     "expose": "ngrok http 8301",
-    "server": "react-scripts start",
+    "server": "PORT=8301 react-scripts start",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "stop": "kill-port 8301 && kill-port 4049 && kill-port 4040"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "axios": "^0.20.0",
     "monday-sdk-js": "0.0.16",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
