@@ -1,4 +1,3 @@
-import { ReactMic } from 'react-mic';
 import React from "react";
 import axios from 'axios';
 
@@ -9,7 +8,6 @@ import "./styles/App.css";
 import mondaySdk from "monday-sdk-js";
 import AudioAnalyser from "react-audio-analyser"
 const monday = mondaySdk();
-
 
 class App extends React.Component {
   constructor(props) {
@@ -27,7 +25,6 @@ class App extends React.Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.submitForm = this.submitForm.bind(this);
-    this.onStop = this.onStop.bind(this);
   }
 
   controlAudio(status) {
@@ -48,28 +45,6 @@ class App extends React.Component {
 
   stopRecording = () => {
     this.setState({ record: false });
-  }
-
-  onData(recordedBlob) {
-    console.log('chunk of real-time data is: ', recordedBlob);
-  }
-
-  async onStop(recordedBlob) {
-    console.log('recordedBlob is: ', recordedBlob);
-    console.log(recordedBlob.blobURL)
-
-    let blob = await fetch(recordedBlob.blobURL).then(r => r.blob());
-
-    console.log(blob)
-
-    var formData = new FormData();
-    formData.append("audio", blob);
-
-    await axios.post(`https://gsf586ygb7.execute-api.us-east-1.amazonaws.com/dev/`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
   }
 
   handleChange(event) {
@@ -100,21 +75,21 @@ class App extends React.Component {
   createItem(queryResultFields, userId) {
     monday.api(`mutation ($boardId: Int!, $task: String!, $columnValues: JSON!){
       create_item(
-        board_id: $boardId, 
-        group_id: "topics", 
+        board_id: $boardId,
+        group_id: "topics",
         item_name: $task,
         column_values: $columnValues) {
           id
       }
     }`, { variables: {boardId: this.state.context.boardIds[0],
       task: queryResultFields.any.listValue.values[0].stringValue,
-      columnValues: JSON.stringify({ 
+      columnValues: JSON.stringify({
           data: {
             date: queryResultFields["date-time"].listValue.values[0].stringValue
           } ,
           person: {
             personsAndTeams:[{id:userId, kind:"person"}]}
-        }) 
+        })
       }}
     )
   }
@@ -158,8 +133,23 @@ class App extends React.Component {
                     'Content-Type': 'multipart/form-data'
                   }
                 })
-
                 console.log(res)
+                var queryResultFields = res.data.queryResult.parameters.fields
+                var userId = 0
+
+                if(checkIsMine(queryResultFields)){
+                  var userData = await monday.api(`{ me { id } }`)
+                  userId = userData.data.me.id
+                } else{
+                  userId = await getUserId(queryResultFields)
+                }
+
+                if(queryResultFields.any.listValue.values.length > 0){
+                  this.createItem(queryResultFields, userId)
+                  this.setState({message: "Success"});
+                }else{
+                  this.setState({message: "Wooops"});
+                }
             },
             onRecordCallback: (e) => {
                 console.log("recording", e)
@@ -191,20 +181,14 @@ class App extends React.Component {
                              <Button type="error" label="Stop" onClick={() => this.controlAudio("inactive")} />
                         </div>
                     </AudioAnalyser>
-                    <p>choose output type</p>
-                    <select name="" id="" onChange={(e) => this.changeScheme(e)} value={audioType}>
-                        <option value="audio/webm">audio/webm（default）</option>
-                        <option value="audio/wav">audio/wav</option>
-                        <option value="audio/mp3">audio/mp3</option>
-                    </select>
 
+                    <div
+                      className="feedback" style={{background: (this.state.settings.background)}}
+                      >
+                      {JSON.stringify(this.state.message, null, 2)}
+                    </div>
         </div>
 
-        <div
-        className="App" style={{background: (this.state.settings.background)}}
-        >
-        {JSON.stringify(this.state.message, null, 2)} 
-      </div>
 
       </div>
     );
@@ -231,7 +215,7 @@ async function getUserId(result){
   var selectedUserData = usersData.data.users.filter(function (user) {
     return user.name.includes(result["given-name"].listValue.values[0].stringValue)
   })
-  
+
   // if there is no user with inputted name, return id zero
   if(selectedUserData[0]){
     return selectedUserData[0].id
