@@ -41,24 +41,36 @@ class App extends React.Component {
 
     var res = await axios.post(`https://gsf586ygb7.execute-api.us-east-1.amazonaws.com/dev/`, {"text": this.state.query})
     var queryResultFields = res.data.queryResult.parameters.fields
+    var userData
+
+    if(checkIsMine(queryResultFields)){
+      userData = await monday.api(`{ me { id } }`)
+    } else{
+      //TODO Get user id
+    }
+
+    this.createItem(queryResultFields, userData.data.me.id)
+  }
+
+  createItem(queryResultFields, userId) {
     monday.api(`mutation ($boardId: Int!, $task: String!, $columnValues: JSON!){
-        create_item(
-          board_id: $boardId, 
-          group_id: "topics", 
-          item_name: $task,
-          column_values: $columnValues) {
-            id
-        }
-      }`, { variables: {boardId: this.state.context.boardIds[0],
-        task: queryResultFields.any.listValue.values[0].stringValue,
-        columnValues: JSON.stringify({ 
-            data: {
-              date: queryResultFields["date-time"].stringValue
-            } ,
-            person: {
-              personsAndTeams:[{id:15660862, kind:"person"}]}
-          }) 
-        }}
+      create_item(
+        board_id: $boardId, 
+        group_id: "topics", 
+        item_name: $task,
+        column_values: $columnValues) {
+          id
+      }
+    }`, { variables: {boardId: this.state.context.boardIds[0],
+      task: queryResultFields.any.listValue.values[0].stringValue,
+      columnValues: JSON.stringify({ 
+          data: {
+            date: queryResultFields["date-time"].listValue.values[0].stringValue
+          } ,
+          person: {
+            personsAndTeams:[{id:userId, kind:"person"}]}
+        }) 
+      }}
     )
   }
 
@@ -89,6 +101,15 @@ class App extends React.Component {
 
       </div>
     );
+  }
+}
+
+function checkIsMine(result) {
+  if(result.selfTask.stringValue){
+    return true
+  }
+  else{
+    return false
   }
 }
 
