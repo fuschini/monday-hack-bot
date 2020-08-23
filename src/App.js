@@ -51,7 +51,14 @@ class App extends React.Component {
         }
       }`, { variables: {boardId: this.state.context.boardIds[0],
         task: queryResultFields.any.listValue.values[0].stringValue,
-        columnValues: JSON.stringify({ data: { date: queryResultFields["date-time"].stringValue } }) }}
+        columnValues: JSON.stringify({ 
+            data: {
+              date: queryResultFields["date-time"].stringValue
+            } ,
+            person: {
+              personsAndTeams:[{id:15660862, kind:"person"}]}
+          }) 
+        }}
     )
   }
 
