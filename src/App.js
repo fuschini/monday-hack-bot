@@ -40,7 +40,7 @@ class App extends React.Component {
   async submitForm() {
 
     var res = await axios.post(`https://gsf586ygb7.execute-api.us-east-1.amazonaws.com/dev/`, {"text": this.state.query})
-
+    var queryResultFields = res.data.queryResult.parameters.fields
     monday.api(`mutation ($boardId: Int!, $task: String!, $columnValues: JSON!){
         create_item(
           board_id: $boardId, 
@@ -50,8 +50,8 @@ class App extends React.Component {
             id
         }
       }`, { variables: {boardId: this.state.context.boardIds[0],
-        task: res.data.queryResult.parameters.fields.any.listValue.values[0].stringValue,
-        columnValues: JSON.stringify({ data: { date: "2020-08-24" } }) }}
+        task: queryResultFields.any.listValue.values[0].stringValue,
+        columnValues: JSON.stringify({ data: { date: queryResultFields["date-time"].stringValue } }) }}
     )
   }
 
