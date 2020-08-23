@@ -21,10 +21,6 @@ class App extends React.Component {
     this.submitForm = this.submitForm.bind(this);
   }
 
-  handleClick() {    
-    
-  }
-
   startRecording = () => {
     this.setState({ record: true });
   }
@@ -45,12 +41,17 @@ class App extends React.Component {
 
     var res = await axios.post(`https://gsf586ygb7.execute-api.us-east-1.amazonaws.com/dev/`, {"text": this.state.query})
 
-    monday.api(`mutation ($boardId: Int!, $task: String!){
-        create_item(board_id: $boardId, group_id: "topics", item_name: $task) {
-          id
+    monday.api(`mutation ($boardId: Int!, $task: String!, $columnValues: JSON!){
+        create_item(
+          board_id: $boardId, 
+          group_id: "topics", 
+          item_name: $task,
+          column_values: $columnValues) {
+            id
         }
       }`, { variables: {boardId: this.state.context.boardIds[0],
-        task: res.data.queryResult.parameters.fields.any.listValue.values[0].stringValue} }
+        task: res.data.queryResult.parameters.fields.any.listValue.values[0].stringValue,
+        columnValues: JSON.stringify({ data: { date: "2020-08-24" } }) }}
     )
   }
 
@@ -61,7 +62,6 @@ class App extends React.Component {
 
     monday.listen("context", res => {
       this.setState({context: res.data});
-      console.log(res.data);
     })
   }
 
