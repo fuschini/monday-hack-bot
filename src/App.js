@@ -1,9 +1,13 @@
 import { ReactMic } from 'react-mic';
 import React from "react";
 import axios from 'axios';
-import { TextField, Button } from '@material-ui/core';
-import "./App.css";
+
+import { TextField } from '@material-ui/core';
+// import {Button} from './components';
+import {Button} from 'monday-ui-components';
+import "./styles/App.css";
 import mondaySdk from "monday-sdk-js";
+import AudioAnalyser from "react-audio-analyser"
 const monday = mondaySdk();
 
 
@@ -15,11 +19,28 @@ class App extends React.Component {
     this.state = {
       settings: {},
       query: "",
-      record: false
+      record: false,
+      audioPath: "",
+      status: "",
+      audioType: "audio/wav"
     };
 
+    this.handleChange = this.handleChange.bind(this);
     this.submitForm = this.submitForm.bind(this);
+    this.onStop = this.onStop.bind(this);
   }
+
+  controlAudio(status) {
+        this.setState({
+            status
+        })
+    }
+
+    changeScheme(e) {
+        this.setState({
+            audioType: e.target.value
+        })
+    }
 
   startRecording = () => {
     this.setState({ record: true });
@@ -33,8 +54,26 @@ class App extends React.Component {
     console.log('chunk of real-time data is: ', recordedBlob);
   }
 
-  onStop(recordedBlob) {
+  async onStop(recordedBlob) {
     console.log('recordedBlob is: ', recordedBlob);
+    console.log(recordedBlob.blobURL)
+
+    let blob = await fetch(recordedBlob.blobURL).then(r => r.blob());
+
+    console.log(blob)
+
+    var formData = new FormData();
+    formData.append("audio", blob);
+
+    await axios.post(`https://gsf586ygb7.execute-api.us-east-1.amazonaws.com/dev/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  }
+
+  handleChange(event) {
+    this.setState({audioPath: event.target.value});
   }
 
   async submitForm() {
@@ -91,6 +130,44 @@ class App extends React.Component {
   }
 
   render() {
+    const {status, audioSrc, audioType} = this.state;
+        const audioProps = {
+            audioType,
+            // audioOptions: {sampleRate: 30000}, // 设置输出音频采样率
+            status,
+            audioSrc,
+            timeslice: 1000, // timeslice（https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/start#Parameters）
+            backgroundColor: '#ffffff',
+            strokeColor: '#0085FF',
+            startCallback: (e) => {
+                console.log("succ start", e)
+            },
+            pauseCallback: (e) => {
+                console.log("succ pause", e)
+            },
+            stopCallback: async (blob) => {
+                // this.setState({
+                //     audioSrc: window.URL.createObjectURL(e)
+                // })
+                console.log("succ stop", blob)
+                var formData = new FormData();
+                formData.append("audio", blob);
+
+                var res = await axios.post(`https://gsf586ygb7.execute-api.us-east-1.amazonaws.com/dev/`, formData, {
+                  headers: {
+                    'Content-Type': 'multipart/form-data'
+                  }
+                })
+
+                console.log(res)
+            },
+            onRecordCallback: (e) => {
+                console.log("recording", e)
+            },
+            errorCallback: (err) => {
+                console.log("error", err)
+            }
+        }
     return (
       <div
         className="App"
@@ -98,10 +175,28 @@ class App extends React.Component {
 
         <div className="main-container">
 
-          <TextField fullWidth id="standard-basic" label="Query" onChange={(event) => {this.setState({query: event.target.value})}} />
-          <Button variant="contained" color="primary" onClick={this.submitForm}>
-            OK
-          </Button>
+          <TextField fullWidth id="standard-basic" label="Add a task" onChange={(event) => {this.setState({query: event.target.value})}} />
+          <Button type="primary" label="Add task" onClick={this.submitForm} />
+
+
+              <AudioAnalyser {...audioProps}>
+                        <div className="btn-box">
+                            {status !== "recording" &&
+
+                           <Button type="primary" label="Start" onClick={() => this.controlAudio("recording")} onTouchTap={this.startRecording} />
+                         }
+                            {status === "recording" &&
+                            <i className="iconfont icon-pause" title="暂停"
+                               onClick={() => this.controlAudio("paused")}></i>}
+                             <Button type="error" label="Stop" onClick={() => this.controlAudio("inactive")} />
+                        </div>
+                    </AudioAnalyser>
+                    <p>choose output type</p>
+                    <select name="" id="" onChange={(e) => this.changeScheme(e)} value={audioType}>
+                        <option value="audio/webm">audio/webm（default）</option>
+                        <option value="audio/wav">audio/wav</option>
+                        <option value="audio/mp3">audio/mp3</option>
+                    </select>
 
         </div>
 
