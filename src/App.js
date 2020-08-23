@@ -41,15 +41,21 @@ class App extends React.Component {
 
     var res = await axios.post(`https://gsf586ygb7.execute-api.us-east-1.amazonaws.com/dev/`, {"text": this.state.query})
     var queryResultFields = res.data.queryResult.parameters.fields
-    var userData
+    var userId = 0
 
     if(checkIsMine(queryResultFields)){
-      userData = await monday.api(`{ me { id } }`)
+      var userData = await monday.api(`{ me { id } }`)
+      userId = userData.data.me.id
     } else{
-      //TODO Get user id
+      userId = await getUserId(queryResultFields)
     }
 
-    this.createItem(queryResultFields, userData.data.me.id)
+    if(queryResultFields.any.listValue.values.length > 0){
+      this.createItem(queryResultFields, userId)
+      this.setState({message: "Success"});
+    }else{
+      this.setState({message: "Wooops"});
+    }
   }
 
   createItem(queryResultFields, userId) {
@@ -99,6 +105,12 @@ class App extends React.Component {
 
         </div>
 
+        <div
+        className="App" style={{background: (this.state.settings.background)}}
+        >
+        {JSON.stringify(this.state.message, null, 2)} 
+      </div>
+
       </div>
     );
   }
@@ -110,6 +122,26 @@ function checkIsMine(result) {
   }
   else{
     return false
+  }
+}
+
+async function getUserId(result){
+  var usersData = await monday.api(`{
+    users(kind: all) {
+      id
+      name
+    }
+  }`)
+
+  var selectedUserData = usersData.data.users.filter(function (user) {
+    return user.name.includes(result["given-name"].listValue.values[0].stringValue)
+  })
+  
+  // if there is no user with inputted name, return id zero
+  if(selectedUserData[0]){
+    return selectedUserData[0].id
+  }else{
+    return 0
   }
 }
 
