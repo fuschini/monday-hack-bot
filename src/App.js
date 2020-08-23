@@ -1,8 +1,11 @@
 import { ReactMic } from 'react-mic';
 import React from "react";
+import axios from 'axios';
+import { TextField, Button } from '@material-ui/core';
 import "./App.css";
 import mondaySdk from "monday-sdk-js";
 const monday = mondaySdk();
+
 
 class App extends React.Component {
   constructor(props) {
@@ -11,9 +14,11 @@ class App extends React.Component {
     // Default state
     this.state = {
       settings: {},
-      name: "",
+      query: "",
       record: false
     };
+
+    this.submitForm = this.submitForm.bind(this);
   }
 
   startRecording = () => {
@@ -30,6 +35,12 @@ class App extends React.Component {
 
   onStop(recordedBlob) {
     console.log('recordedBlob is: ', recordedBlob);
+  }
+
+  async submitForm() {
+
+    var res = await axios.post(`https://gsf586ygb7.execute-api.us-east-1.amazonaws.com/dev/`, {"text": this.state.query})
+    console.log(res)
   }
 
   componentDidMount() {
@@ -52,24 +63,18 @@ class App extends React.Component {
   render() {
     return (
       <div
-        className="App" style={{background: (this.state.settings.background)}}
+        className="App"
         >
 
-        fusca
+        <div className="main-container">
 
-        <div>
-          <ReactMic
-            record={this.state.record}
-            className="sound-wave"
-            onStop={this.onStop}
-            onData={this.onData}
-            strokeColor="#000000"
-            backgroundColor="#FF4081" />
-          <button onClick={this.startRecording} type="button">Start</button>
-          <button onClick={this.stopRecording} type="button">Stop</button>
+          <TextField fullWidth id="standard-basic" label="Query" onChange={(event) => {this.setState({query: event.target.value})}} />
+          <Button variant="contained" color="primary" onClick={this.submitForm}>
+            OK
+          </Button>
+
         </div>
 
-        {JSON.stringify(this.state.boardData, null, 2)}
       </div>
     );
   }
