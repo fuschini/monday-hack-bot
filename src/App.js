@@ -1,9 +1,13 @@
 import { ReactMic } from 'react-mic';
 import React from "react";
 import axios from 'axios';
-import { TextField, Button } from '@material-ui/core';
-import "./App.css";
+
+import { TextField } from '@material-ui/core';
+// import {Button} from './components';
+import {Button} from 'monday-ui-components';
+import "./styles/App.css";
 import mondaySdk from "monday-sdk-js";
+const FormData = require('form-data');
 const monday = mondaySdk();
 
 
@@ -15,7 +19,8 @@ class App extends React.Component {
     this.state = {
       settings: {},
       query: "",
-      record: false
+      record: false,
+      audioPath: ""
     };
 
     this.submitForm = this.submitForm.bind(this);
@@ -35,6 +40,9 @@ class App extends React.Component {
 
   onStop(recordedBlob) {
     console.log('recordedBlob is: ', recordedBlob);
+    const reader = new FileReader();
+
+    reader.readAsBinaryString(recordedBlob.blobURL);
   }
 
   async submitForm() {
@@ -68,10 +76,21 @@ class App extends React.Component {
 
         <div className="main-container">
 
-          <TextField fullWidth id="standard-basic" label="Query" onChange={(event) => {this.setState({query: event.target.value})}} />
-          <Button variant="contained" color="primary" onClick={this.submitForm}>
-            OK
-          </Button>
+          <TextField fullWidth id="standard-basic" label="Add a task" onChange={(event) => {this.setState({query: event.target.value})}} />
+          <Button type="primary" label="Add task" onClick={this.submitForm} />
+
+            <ReactMic
+              record={this.state.record}
+              className="sound-wave"
+              visualSetting="sinewave"
+              onStop={this.onStop}
+              onData={this.onData}
+              strokeColor="#0085FF"
+              backgroundColor="#FFFFFF" />
+            <Button type="primary" label="Start" onClick={this.startRecording} onTouchTap={this.startRecording} />
+            <Button type="error" label="Stop" onClick={this.stopRecording} onTouchTap={this.stopRecording} />
+
+              <input type="file" id="avatar" name="avatar" accept="audio/*" value={this.state.audioPath}></input>
 
         </div>
 
