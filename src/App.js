@@ -66,7 +66,7 @@ class App extends React.Component {
 
     if(queryResultFields.any.listValue.values.length > 0){
       this.createItem(queryResultFields, userId)
-      this.setState({message: "Success"});
+      this.setState({message:  "Success"});
     }else{
       this.setState({message: "Wooops"});
     }
@@ -213,7 +213,13 @@ async function getUserId(result){
   }`)
 
   var selectedUserData = usersData.data.users.filter(function (user) {
-    return user.name.includes(result["given-name"].listValue.values[0].stringValue)
+    var fullName = result["given-name"].listValue.values[0].stringValue.trim().concat(' ',result["last-name"].listValue.values[0].stringValue.trim())
+    console.log("actual: ")
+    console.log(user.name)
+    console.log("expected: ")
+    console.log(fullName)
+    console.log(user.name == fullName)
+    return user.name == fullName
   })
 
   // if there is no user with inputted name, return id zero
