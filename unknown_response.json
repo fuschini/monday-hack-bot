@@ -1,0 +1,94 @@
+{
+   "responseId":"bf1d3465-2c97-4302-a646-f17315b3a9c0-d794dba9",
+   "queryResult":{
+      "fulfillmentMessages":[
+         {
+            "platform":"PLATFORM_UNSPECIFIED",
+            "text":{
+               "text":[
+                  "Sorry, I didn't get that. Can you rephrase?"
+               ]
+            },
+            "message":"text"
+         }
+      ],
+      "outputContexts":[
+         {
+            "name":"projects/mondayhackathon-qlor/agent/sessions/123456789/contexts/__system_counters__",
+            "lifespanCount":1,
+            "parameters":{
+               "fields":{
+                  "no-input":{
+                     "numberValue":0,
+                     "kind":"numberValue"
+                  },
+                  "no-match":{
+                     "numberValue":2,
+                     "kind":"numberValue"
+                  }
+               }
+            }
+         }
+      ],
+      "queryText":"desk for me to do a backflip tomorrow",
+      "speechRecognitionConfidence":0.9672207236289978,
+      "action":"input.unknown",
+      "parameters":{
+         "fields":{
+
+         }
+      },
+      "allRequiredParamsPresent":true,
+      "fulfillmentText":"Sorry, I didn't get that. Can you rephrase?",
+      "webhookSource":"",
+      "webhookPayload":null,
+      "intent":{
+         "inputContextNames":[
+
+         ],
+         "events":[
+
+         ],
+         "trainingPhrases":[
+
+         ],
+         "outputContexts":[
+
+         ],
+         "parameters":[
+
+         ],
+         "messages":[
+
+         ],
+         "defaultResponsePlatforms":[
+
+         ],
+         "followupIntentInfo":[
+
+         ],
+         "name":"projects/mondayhackathon-qlor/agent/intents/cbb36bbf-80f0-4511-abcd-1a7795adc806",
+         "displayName":"Default Fallback Intent",
+         "priority":0,
+         "isFallback":true,
+         "webhookState":"WEBHOOK_STATE_UNSPECIFIED",
+         "action":"",
+         "resetContexts":false,
+         "rootFollowupIntentName":"",
+         "parentFollowupIntentName":"",
+         "mlDisabled":false
+      },
+      "intentDetectionConfidence":1,
+      "diagnosticInfo":null,
+      "languageCode":"en",
+      "sentimentAnalysisResult":null
+   },
+   "webhookStatus":null,
+   "outputAudio":{
+      "type":"Buffer",
+      "data":[
+
+      ]
+   },
+   "outputAudioConfig":null
+}

@@ -1,0 +1,231 @@
+{
+   "responseId":"115b0791-59a8-4c49-b81e-d74587cdbcf1-d794dba9",
+   "queryResult":{
+      "fulfillmentMessages":[
+         {
+            "platform":"PLATFORM_UNSPECIFIED",
+            "text":{
+               "text":[
+                  "I added do a backflip to 2020-08-30 in your board"
+               ]
+            },
+            "message":"text"
+         }
+      ],
+      "outputContexts":[
+         {
+            "name":"projects/mondayhackathon-qlor/agent/sessions/123456789/contexts/__system_counters__",
+            "lifespanCount":1,
+            "parameters":{
+               "fields":{
+                  "last-name":{
+                     "listValue":{
+                        "values":[
+
+                        ]
+                     },
+                     "kind":"listValue"
+                  },
+                  "no-match":{
+                     "numberValue":0,
+                     "kind":"numberValue"
+                  },
+                  "date-time.original":{
+                     "listValue":{
+                        "values":[
+                           {
+                              "stringValue":"tomorrow",
+                              "kind":"stringValue"
+                           }
+                        ]
+                     },
+                     "kind":"listValue"
+                  },
+                  "no-input":{
+                     "numberValue":0,
+                     "kind":"numberValue"
+                  },
+                  "time-period.original":{
+                     "stringValue":"",
+                     "kind":"stringValue"
+                  },
+                  "selfTask":{
+                     "stringValue":"mine",
+                     "kind":"stringValue"
+                  },
+                  "any":{
+                     "listValue":{
+                        "values":[
+                           {
+                              "stringValue":"do a backflip",
+                              "kind":"stringValue"
+                           }
+                        ]
+                     },
+                     "kind":"listValue"
+                  },
+                  "selfTask.original":{
+                     "stringValue":"for me",
+                     "kind":"stringValue"
+                  },
+                  "last-name.original":{
+                     "listValue":{
+                        "values":[
+
+                        ]
+                     },
+                     "kind":"listValue"
+                  },
+                  "time-period":{
+                     "stringValue":"",
+                     "kind":"stringValue"
+                  },
+                  "any.original":{
+                     "listValue":{
+                        "values":[
+                           {
+                              "stringValue":"do a backflip",
+                              "kind":"stringValue"
+                           }
+                        ]
+                     },
+                     "kind":"listValue"
+                  },
+                  "date-time":{
+                     "listValue":{
+                        "values":[
+                           {
+                              "stringValue":"2020-08-30T12:00:00-03:00",
+                              "kind":"stringValue"
+                           }
+                        ]
+                     },
+                     "kind":"listValue"
+                  },
+                  "given-name":{
+                     "listValue":{
+                        "values":[
+
+                        ]
+                     },
+                     "kind":"listValue"
+                  },
+                  "given-name.original":{
+                     "listValue":{
+                        "values":[
+
+                        ]
+                     },
+                     "kind":"listValue"
+                  }
+               }
+            }
+         }
+      ],
+      "queryText":"add a task for me to do a backflip tomorrow",
+      "speechRecognitionConfidence":0.982300341129303,
+      "action":"",
+      "parameters":{
+         "fields":{
+            "any":{
+               "listValue":{
+                  "values":[
+                     {
+                        "stringValue":"do a backflip",
+                        "kind":"stringValue"
+                     }
+                  ]
+               },
+               "kind":"listValue"
+            },
+            "date-time":{
+               "listValue":{
+                  "values":[
+                     {
+                        "stringValue":"2020-08-30T12:00:00-03:00",
+                        "kind":"stringValue"
+                     }
+                  ]
+               },
+               "kind":"listValue"
+            },
+            "last-name":{
+               "listValue":{
+                  "values":[
+
+                  ]
+               },
+               "kind":"listValue"
+            },
+            "selfTask":{
+               "stringValue":"mine",
+               "kind":"stringValue"
+            },
+            "time-period":{
+               "stringValue":"",
+               "kind":"stringValue"
+            },
+            "given-name":{
+               "listValue":{
+                  "values":[
+
+                  ]
+               },
+               "kind":"listValue"
+            }
+         }
+      },
+      "allRequiredParamsPresent":true,
+      "fulfillmentText":"I added do a backflip to 2020-08-30 in your board",
+      "webhookSource":"",
+      "webhookPayload":null,
+      "intent":{
+         "inputContextNames":[
+
+         ],
+         "events":[
+
+         ],
+         "trainingPhrases":[
+
+         ],
+         "outputContexts":[
+
+         ],
+         "parameters":[
+
+         ],
+         "messages":[
+
+         ],
+         "defaultResponsePlatforms":[
+
+         ],
+         "followupIntentInfo":[
+
+         ],
+         "name":"projects/mondayhackathon-qlor/agent/intents/277395df-5e10-44be-a017-9620cbef0e4e",
+         "displayName":"addTask",
+         "priority":0,
+         "isFallback":false,
+         "webhookState":"WEBHOOK_STATE_UNSPECIFIED",
+         "action":"",
+         "resetContexts":false,
+         "rootFollowupIntentName":"",
+         "parentFollowupIntentName":"",
+         "mlDisabled":false
+      },
+      "intentDetectionConfidence":1,
+      "diagnosticInfo":null,
+      "languageCode":"en",
+      "sentimentAnalysisResult":null
+   },
+   "webhookStatus":null,
+   "outputAudio":{
+      "type":"Buffer",
+      "data":[
+
+      ]
+   },
+   "outputAudioConfig":null
+}

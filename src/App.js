@@ -7,7 +7,15 @@ import {Button} from 'monday-ui-components';
 import "./styles/App.css";
 import mondaySdk from "monday-sdk-js";
 import AudioAnalyser from "react-audio-analyser"
+import { Mic } from '@material-ui/icons';
+import { css } from "@emotion/core";
+import { ScaleLoader } from "react-spinners";
 const monday = mondaySdk();
+
+const override = css`
+  display: block;
+  margin: 0 auto;
+`;
 
 class App extends React.Component {
   constructor(props) {
@@ -20,11 +28,16 @@ class App extends React.Component {
       record: false,
       audioPath: "",
       status: "",
-      audioType: "audio/wav"
+      audioType: "audio/wav",
+      loading: true,
+      btnIcon: 'mic',
+      message: 'Hold the button and start speaking to add a task to your board.',
+      displayTextInput: false
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.submitForm = this.submitForm.bind(this);
+    this.toggleTextInput = this.toggleTextInput.bind(this);
   }
 
   controlAudio(status) {
@@ -104,8 +117,16 @@ class App extends React.Component {
     })
   }
 
+  toggleTextInput() {
+    if (this.displayTextInput) {
+      this.setState({displayTextInput: false})
+    } else {
+      this.setState({displayTextInput: true})
+    }
+  }
+
   render() {
-    const {status, audioSrc, audioType} = this.state;
+    const {status, audioSrc, audioType, btnIcon, displayTextInput} = this.state;
         const audioProps = {
             audioType,
             // audioOptions: {sampleRate: 30000}, // 设置输出音频采样率
@@ -113,6 +134,7 @@ class App extends React.Component {
             audioSrc,
             timeslice: 1000, // timeslice（https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/start#Parameters）
             backgroundColor: '#ffffff',
+            width: window.screen.width,
             strokeColor: '#0085FF',
             startCallback: (e) => {
                 console.log("succ start", e)
@@ -128,28 +150,44 @@ class App extends React.Component {
                 var formData = new FormData();
                 formData.append("audio", blob);
 
-                var res = await axios.post(`https://gsf586ygb7.execute-api.us-east-1.amazonaws.com/dev/`, formData, {
-                  headers: {
-                    'Content-Type': 'multipart/form-data'
+                this.setState({btnIcon: "loading", message: "Processing audio..."});
+
+                try {
+                  var res = await axios.post(`https://gsf586ygb7.execute-api.us-east-1.amazonaws.com/dev/`, formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data'
+                    }
+                  })
+                  console.log(res)
+
+                  if (res.data.queryResult.intent.name === 'projects/mondayhackathon-qlor/agent/intents/277395df-5e10-44be-a017-9620cbef0e4e') {
+
+                    var queryResultFields = res.data.queryResult.parameters.fields
+                    var userId = 0
+
+                    if(checkIsMine(queryResultFields)){
+                      var userData = await monday.api(`{ me { id } }`)
+                      userId = userData.data.me.id
+                    } else {
+                      userId = await getUserId(queryResultFields)
+                    }
+
+                    if (queryResultFields.any.listValue.values.length > 0) {
+                      this.createItem(queryResultFields, userId)
+                    }
+
                   }
-                })
-                console.log(res)
-                var queryResultFields = res.data.queryResult.parameters.fields
-                var userId = 0
 
-                if(checkIsMine(queryResultFields)){
-                  var userData = await monday.api(`{ me { id } }`)
-                  userId = userData.data.me.id
-                } else{
-                  userId = await getUserId(queryResultFields)
+                  this.setState({message: res.data.queryResult.fulfillmentText});
+
+                  this.setState({btnIcon: "mic"});
+
+                } catch (err) {
+                  console.log(err)
+                  this.setState({btnIcon: "mic"});
+                  this.setState({message: "Something went wrong... Try again or check the logs."});
                 }
 
-                if(queryResultFields.any.listValue.values.length > 0){
-                  this.createItem(queryResultFields, userId)
-                  this.setState({message: "Success"});
-                }else{
-                  this.setState({message: "Wooops"});
-                }
             },
             onRecordCallback: (e) => {
                 console.log("recording", e)
@@ -159,36 +197,48 @@ class App extends React.Component {
             }
         }
     return (
-      <div
-        className="App"
-        >
+      <div className="App">
 
         <div className="main-container">
 
-          <TextField fullWidth id="standard-basic" label="Add a task" onChange={(event) => {this.setState({query: event.target.value})}} />
-          <Button type="primary" label="Add task" onClick={this.submitForm} />
+          <div className="feedback">
+            {this.state.message}
+          </div>
+
+          <button id="test" className="recordingButton" onMouseDown={() => this.controlAudio("recording")} onMouseUp={ () => {this.controlAudio("inactive"); document.activeElement.blur()} }>
+              <div className="btnIconWrapper">
+                {btnIcon === 'loading' &&
+                  <ScaleLoader
+                    css={override}
+                    color={"#ffffff"}
+                    height={70 + 22}
+                    width={15}
+                    loading={this.state.loading}
+                    />
+                }
+
+                {btnIcon === 'mic' && <Mic className="micIcon" />}
+              </div>
+            </button>
+
+          <AudioAnalyser {...audioProps}></AudioAnalyser>
 
 
-              <AudioAnalyser {...audioProps}>
-                        <div className="btn-box">
-                            {status !== "recording" &&
+          {displayTextInput ?
+            <div className="textInputWrapper">
+              <TextField fullWidth id="standard-basic" label="Add a task" onChange={(event) => {this.setState({query: event.target.value})}} />
 
-                           <Button type="primary" label="Start" onClick={() => this.controlAudio("recording")} onTouchTap={this.startRecording} />
-                         }
-                            {status === "recording" &&
-                            <i className="iconfont icon-pause" title="暂停"
-                               onClick={() => this.controlAudio("paused")}></i>}
-                             <Button type="error" label="Stop" onClick={() => this.controlAudio("inactive")} />
-                        </div>
-                    </AudioAnalyser>
+              <div className="textBtnWrapper">
+                <Button type="primary" label="Add&nbsp;task" onClick={this.submitForm} />
+              </div>
+            </div> : ''
+          }
 
-                    <div
-                      className="feedback" style={{background: (this.state.settings.background)}}
-                      >
-                      {JSON.stringify(this.state.message, null, 2)}
-                    </div>
         </div>
 
+        <div className="footer">
+          <button  className="secondaryButton" onClick={() => this.toggleTextInput()} >Text&nbsp;input</button>
+        </div>
 
       </div>
     );

@@ -4,18 +4,22 @@ body {
 }
 
 .App {
-  height: 100vh;
-  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.feedback {
+  font-family: 'Roboto', Arial;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  padding: 24px;
+}
+
 .main-container {
-  margin: auto;
-  padding: 48px 32px;
+  padding: 48px 0;
   width: 100%;
-  max-width: 512px;
   text-align: center;
 }
 
@@ -27,4 +31,78 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.recordingButton {
+  cursor: pointer;
+  background-color: #0085FF;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  transition: all linear 0.2s;
+  padding: 64px;
+}
+
+.btnIconWrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.recordingButton:active, :focus {
+  outline: none;
+  background-color: #1971d9;
+}
+
+.recordingButton:hover {
+  background-color: #1971d9;
+}
+
+.hidden {
+  display: none;
+}
+
+.micIcon {
+  font-size: 6rem !important;
+}
+
+.textInputWrapper {
+  max-width: 720px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+
+.textBtnWrapper {
+  margin-left: 24px;
+}
+
+.secondaryButton {
+  background-color: #ffffff00;
+  color: #0085FF;
+  outline: none;
+  padding: 12px 24px 12px 24px;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  border-radius: 30px;
+  border: none;
+  line-height: 128%;
+  cursor: pointer;
+  transition: all linear 0.2s;
+}
+
+.secondaryButton:hover {
+  background-color: #e6e9ef;
+}
+
+.secondaryButton:active {
+  background-color: #dff0fd;
+}
+
+.footer {
+  position: fixed;
+  bottom: 8px;
+  left: 8px;
 }
